@@ -13,6 +13,11 @@ const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
 const nav = document.querySelector('.nav');
 const sections = document.querySelectorAll('.section')
+const lazyLoadedImgs = document.querySelectorAll('img[data-src]')
+const slides = document.querySelectorAll('.slide')
+const slider = document.querySelector('.slider')
+const btnSlideLeft = document.querySelector('.slider__btn--left')
+const btnSlideRight = document.querySelector('.slider__btn--right')
 
 //modals 
 const openModal = function () {
@@ -129,3 +134,87 @@ sections.forEach(function(section){
   sectionObserver.observe(section)
   section.classList.add('section--hidden')
 })
+
+//lazy loading images
+const lazyImgsOptions = {
+  root:null,
+  threshold:0,
+  rootMargin:`${250}px`
+}
+
+const lazyImgsCallback = function (entries){
+  const [entry] = entries
+  if(entry.isIntersecting)
+  {
+    entry.target.src = entry.target.dataset.src
+    entry.target.addEventListener('load',function(){
+      this.classList.remove('lazy-img')
+    })
+    lazyImgsObserver.unobserve(entry.target)
+  }
+}
+
+const lazyImgsObserver = new IntersectionObserver(lazyImgsCallback,lazyImgsOptions)
+lazyLoadedImgs.forEach(function(img){
+  lazyImgsObserver.observe(img)
+})
+
+
+
+//slider
+let currentSlide = 0;
+let numOfSlides = slides.length
+
+function setSlidesTransition(curSlide){
+  slides.forEach(function(slide,i){
+    slide.style.transform = `translateX(${(i-curSlide) * 100}%)`
+  })
+}
+
+setSlidesTransition(0)
+
+function updateSlide(direction)
+{
+  if(direction === 1)
+  {
+    if(currentSlide === numOfSlides - 1)
+    currentSlide = 0
+    else
+    currentSlide++;
+  }
+  else
+  {
+    if(currentSlide === 0)
+      currentSlide = numOfSlides - 1
+    else
+      currentSlide--;
+  }
+  setSlidesTransition(currentSlide)
+}
+
+btnSlideRight.addEventListener('click',function(){
+  updateSlide(1)
+})
+btnSlideLeft.addEventListener('click',function(){
+  updateSlide(-1)
+})
+
+document.addEventListener('keydown',function(e){
+  if(e.key === "ArrowLeft")
+    updateSlide(-1)
+  else if(e.key === "ArrowRight")
+    updateSlide(1)
+})
+
+
+ 
+
+
+
+
+
+
+
+
+
+
