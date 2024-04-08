@@ -12,6 +12,7 @@ const tabs = document.querySelectorAll('.operations__tab');
 const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
 const nav = document.querySelector('.nav');
+const sections = document.querySelectorAll('.section')
 
 //modals 
 const openModal = function () {
@@ -83,7 +84,6 @@ function toggleNavLink(e){
   }
 }
 
-//sticky nav bar
 nav.addEventListener('mouseover',function(e){
   toggleNavLink(e)
 })
@@ -92,19 +92,40 @@ nav.addEventListener('mouseout',function(e){
   toggleNavLink(e)
 })
 
+//sticky nav bar
 const navHeight = nav.getBoundingClientRect().height;
-const observerOptions = {
+const headerObserverOptions = {
   root:null,
   threshold:0,
-  rootMargin:`${-navHeight}px`
+  rootMargin:`${-navHeight}px` 
 }
-const observerCallBack = function(entries){
+const headerObserverCallBack = function(entries){
   const [entry] = entries
   if(!entry.isIntersecting)
     nav.classList.add('sticky')
   else
     nav.classList.remove('sticky')
 }
-const headerObserver = new IntersectionObserver(observerCallBack, observerOptions)
+const headerObserver = new IntersectionObserver(headerObserverCallBack, headerObserverOptions)
 
 headerObserver.observe(header)
+
+//sections reveal on scroll 
+const sectionObserverOptions = {
+  root:null,
+  threshold:0.15,
+}
+const sectionObserverCallBack = function(entries){
+  const [entry] = entries
+  if(entry.isIntersecting)
+  {
+    entry.target.classList.remove('section--hidden')
+    sectionObserver.unobserve(entry.target)
+  }
+}
+
+const sectionObserver = new IntersectionObserver(sectionObserverCallBack, sectionObserverOptions)
+sections.forEach(function(section){
+  sectionObserver.observe(section)
+  section.classList.add('section--hidden')
+})
